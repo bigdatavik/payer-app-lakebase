@@ -31,6 +31,7 @@ This project provides a Databricks-native analytics app for healthcare payer cla
 ### 1. Sync Claims Table to Lakebase
 
 - Use Lakeflow or the Databricks UI to **sync the `claims_enriched` table** from the gold schema into your Lakebase instance.
+- For steps to provision the lakebase PostgreSQL database in Databricks see my [Medium blog](https://medium.com/@vikram.malhotra/how-to-build-a-databricks-analytics-app-on-lakebase-from-setup-to-insights-89275e37e6eb) 
 - Register the synced Lakebase database/catalog in Unity Catalog for access and governance.
 
 ![](images/sync1.png)
