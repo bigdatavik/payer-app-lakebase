@@ -13,7 +13,7 @@ postgres_password = None
 last_password_refresh = 0
 connection_pool = None
 
-CLAIMS_TABLE = "claims_snapshot"
+CLAIMS_TABLE = "claims_enriched"
 SCHEMA_NAME = "reporting"
 
 def refresh_oauth_token():
