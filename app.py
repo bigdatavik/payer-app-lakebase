@@ -16,17 +16,42 @@ connection_pool = None
 CLAIMS_TABLE = "claims_enriched"
 SCHEMA_NAME = "reporting"
 
+# def refresh_oauth_token():
+#     """Refresh OAuth token if expired."""
+#     global postgres_password, last_password_refresh
+#     if postgres_password is None or time.time() - last_password_refresh > 900:
+#         print("Refreshing PostgreSQL OAuth token")
+#         try:
+#             #postgres_password = workspace_client.config.oauth_token().access_token
+#             postgres_password = os.getenv('PGPASSWORD')
+#             last_password_refresh = time.time()
+#         except Exception as e:
+#             st.error(f"❌ Failed to refresh OAuth token: {str(e)}")
+#             st.stop()
+
 def refresh_oauth_token():
     """Refresh OAuth token if expired."""
     global postgres_password, last_password_refresh
     if postgres_password is None or time.time() - last_password_refresh > 900:
         print("Refreshing PostgreSQL OAuth token")
         try:
+            # Try to get token from Databricks workspace client (cloud)
             postgres_password = workspace_client.config.oauth_token().access_token
+            # If that didn't work, fallback to environment variable
+            if not postgres_password:
+                postgres_password = os.getenv('PGPASSWORD')
+            if not postgres_password:
+                raise ValueError("Could not get OAuth token from either Databricks SDK or PGPASSWORD environment variable.")
             last_password_refresh = time.time()
         except Exception as e:
-            st.error(f"❌ Failed to refresh OAuth token: {str(e)}")
-            st.stop()
+            # On any error, fallback to environment variable
+            postgres_password = os.getenv('PGPASSWORD')
+            if not postgres_password:
+                st.error(f"❌ Failed to refresh OAuth token: {str(e)} (also, PGPASSWORD env var not set!)")
+                st.stop()
+            last_password_refresh = time.time()
+
+
 
 def get_connection_pool():
     """Get or create the connection pool."""
